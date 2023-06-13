@@ -1,5 +1,5 @@
 #include "bios_config.hpp"
-
+#include <iostream>
 #include "bios_enum_attribute.hpp"
 #include "bios_integer_attribute.hpp"
 #include "bios_string_attribute.hpp"
@@ -41,6 +41,7 @@ constexpr auto attrValueTableFile = "attributeValueTable";
 
 } // namespace
 
+
 BIOSConfig::BIOSConfig(
     const char* jsonDir, const char* tableDir, DBusHandler* const dbusHandler,
     int fd, uint8_t eid, pldm::InstanceIdDb* instanceIdDb,
@@ -67,6 +68,7 @@ void BIOSConfig::buildTables()
 std::optional<Table> BIOSConfig::getBIOSTable(pldm_bios_table_types tableType)
 {
     fs::path tablePath;
+    std::cout<<"Inside "<<__func__<<std::endl;
     switch (tableType)
     {
         case PLDM_BIOS_STRING_TABLE:
