@@ -96,6 +96,8 @@ void BIOSStringAttribute::constructEntry(
     const BIOSStringTable& stringTable, Table& attrTable, Table& attrValueTable,
     std::optional<std::variant<int64_t, std::string>> optAttributeValue)
 {
+    std::cout << "Inside func "<<__func__<<"BIOSStringAttribute  optAttributeValue= \""<<std::get<std::string>(optAttributeValue.value())<<"\"" <<std::endl;
+    
     pldm_bios_table_attr_entry_string_info info = {
         stringTable.findHandle(name), readOnly,
         stringInfo.stringType,        stringInfo.minLength,

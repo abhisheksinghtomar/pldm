@@ -111,9 +111,12 @@ const pldm_bios_string_table_entry* constructEntry(Table& table,
 {
     auto tableSize = table.size();
     auto entryLength = pldm_bios_table_string_entry_encode_length(str.length());
+    
+    printf("Inside func %s",__func__);
     table.resize(tableSize + entryLength);
     pldm_bios_table_string_entry_encode(table.data() + tableSize, entryLength,
                                         str.c_str(), str.length());
+    
     return reinterpret_cast<pldm_bios_string_table_entry*>(table.data() +
                                                            tableSize);
 }

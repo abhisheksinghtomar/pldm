@@ -125,9 +125,11 @@ void BIOSEnumAttribute::buildValMap(const Json& dbusVals)
 uint8_t BIOSEnumAttribute::getAttrValueIndex()
 {
     auto defaultValueIndex = getValueIndex(defaultValue, possibleValues);
+    std::cout << "Inside func"<<__func__<<std::endl;
     if (!dBusMap.has_value())
     {
-        return defaultValueIndex;
+	std::cerr << "Inside func"<<__func__<<"Failed :getValueIndex return no value"<<std::endl;
+	return defaultValueIndex;
     }
 
     try
@@ -138,13 +140,14 @@ uint8_t BIOSEnumAttribute::getAttrValueIndex()
         auto iter = valMap.find(propValue);
         if (iter == valMap.end())
         {
-            return defaultValueIndex;
+		return defaultValueIndex;
         }
         auto currentValue = iter->second;
         return getValueIndex(currentValue, possibleValues);
     }
     catch (const std::exception& e)
     {
+	std::cerr << "Inside func"<<__func__<<"Failed :going with defalt value index catch"<<std::endl;
         return defaultValueIndex;
     }
 }
@@ -157,6 +160,7 @@ uint8_t BIOSEnumAttribute::getAttrValueIndex(const PropertyValue& propValue)
     }
     catch (const std::exception& e)
     {
+	std::cerr << "Inside func"<<__func__<<"Failed :going with defalt value index catch"<<std::endl;
         return getValueIndex(defaultValue, possibleValues);
     }
 }
@@ -192,6 +196,7 @@ void BIOSEnumAttribute::constructEntry(
     const BIOSStringTable& stringTable, Table& attrTable, Table& attrValueTable,
     std::optional<std::variant<int64_t, std::string>> optAttributeValue)
 {
+    std::cout << "Inside func  optAttributeValue="<<std::get<std::string>(optAttributeValue.value())<<__func__<<std::endl;
     auto possibleValuesHandle =
         getPossibleValuesHandle(stringTable, possibleValues);
     std::vector<uint8_t> defaultIndices(1, 0);

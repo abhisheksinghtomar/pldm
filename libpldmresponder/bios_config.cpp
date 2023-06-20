@@ -18,6 +18,7 @@
 using namespace pldm::dbus_api;
 using namespace pldm::utils;
 
+
 namespace pldm
 {
 namespace responder
@@ -56,6 +57,7 @@ BIOSConfig::BIOSConfig(
 void BIOSConfig::buildTables()
 {
     auto stringTable = buildAndStoreStringTable();
+    std::cout << "Inside func "<<__func__<<std::endl;
     if (stringTable)
     {
         buildAndStoreAttrTables(*stringTable);
@@ -65,6 +67,7 @@ void BIOSConfig::buildTables()
 std::optional<Table> BIOSConfig::getBIOSTable(pldm_bios_table_types tableType)
 {
     fs::path tablePath;
+    std::cout << "Inside func"<<__func__<<std::endl;
     switch (tableType)
     {
         case PLDM_BIOS_STRING_TABLE:
@@ -83,6 +86,8 @@ std::optional<Table> BIOSConfig::getBIOSTable(pldm_bios_table_types tableType)
 int BIOSConfig::setBIOSTable(uint8_t tableType, const Table& table,
                              bool updateBaseBIOSTable)
 {
+
+    std::cout << "Inside func"<<__func__<<std::endl;
     fs::path stringTablePath(tableDir / stringTableFile);
     fs::path attrTablePath(tableDir / attrTableFile);
     fs::path attrValueTablePath(tableDir / attrValueTableFile);
@@ -432,8 +437,11 @@ void BIOSConfig::updateBaseBIOSTableProperty()
     constexpr static auto biosConfigPropertyName = "BaseBIOSTable";
     constexpr static auto dbusProperties = "org.freedesktop.DBus.Properties";
 
+    std::cout << "Inside func"<<__func__<<std::endl;
+
     if (baseBIOSTableMaps.empty())
     {
+        std::cerr << "baseBIOSTableMaps.empty, ERROR func="<<__func__<<"\n";
         return;
     }
 
@@ -479,6 +487,9 @@ void BIOSConfig::updateBaseBIOSTableProperty()
 
 void BIOSConfig::constructAttributes()
 {
+
+    std::cout << "Inside func json load"<<__func__<<std::endl;
+
     load(jsonDir / stringJsonFile, [this](const Json& entry) {
         constructAttribute<BIOSStringAttribute>(entry);
     });
@@ -493,6 +504,7 @@ void BIOSConfig::constructAttributes()
 void BIOSConfig::buildAndStoreAttrTables(const Table& stringTable)
 {
     BIOSStringTable biosStringTable(stringTable);
+    std::cout << "Inside func"<<__func__<<std::endl;
 
     if (biosAttributes.empty())
     {
@@ -506,6 +518,8 @@ void BIOSConfig::buildAndStoreAttrTables(const Table& stringTable)
     try
     {
         auto& bus = dbusHandler->getBus();
+
+    	std::cout << "Inside func"<<__func__<<"inside try 1"<<std::endl;
         auto service = dbusHandler->getService(biosObjPath, biosInterface);
         auto method =
             bus.new_method_call(service.c_str(), biosObjPath,
@@ -529,12 +543,13 @@ void BIOSConfig::buildAndStoreAttrTables(const Table& stringTable)
 
     for (auto& attr : biosAttributes)
     {
+    std::cout << "Inside func for "<<__func__<<std::endl;
         try
         {
             auto iter = biosTable.find(attr->name);
             if (iter == biosTable.end())
             {
-                attr->constructEntry(biosStringTable, attrTable, attrValueTable,
+		    attr->constructEntry(biosStringTable, attrTable, attrValueTable,
                                      std::nullopt);
             }
             else
@@ -561,6 +576,8 @@ void BIOSConfig::buildAndStoreAttrTables(const Table& stringTable)
 std::optional<Table> BIOSConfig::buildAndStoreStringTable()
 {
     std::set<std::string> strings;
+
+    std::cout << "Inside func "<<__func__<<std::endl;
     auto handler = [&strings](const Json& entry) {
         strings.emplace(entry.at("attribute_name"));
     };
@@ -588,6 +605,8 @@ std::optional<Table> BIOSConfig::buildAndStoreStringTable()
     }
 
     table::appendPadAndChecksum(table);
+    
+    std::cout << "Inside func"<<__func__<<"calling setBIOSTable "<<std::endl;
     setBIOSTable(PLDM_BIOS_STRING_TABLE, table);
     return table;
 }
@@ -996,6 +1015,7 @@ void BIOSConfig::constructPendingAttribute(
     const PendingAttributes& pendingAttributes)
 {
     std::vector<uint16_t> listOfHandles{};
+    std::cout << "Inside func"<<__func__<<std::endl;
 
     for (auto& attribute : pendingAttributes)
     {
@@ -1066,6 +1086,7 @@ void BIOSConfig::listenPendingAttributes()
     constexpr auto objPath = "/xyz/openbmc_project/bios_config/manager";
     constexpr auto objInterface = "xyz.openbmc_project.BIOSConfig.Manager";
 
+    std::cout << "Inside func"<<__func__<<std::endl;
     using namespace sdbusplus::bus::match::rules;
     auto updateBIOSMatch = std::make_unique<sdbusplus::bus::match::match>(
         pldm::utils::DBusHandler::getBus(),

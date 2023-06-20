@@ -414,14 +414,17 @@ void DBusHandler::setDbusProperty(const DBusMapping& dBusMap,
 PropertyValue DBusHandler::getDbusPropertyVariant(
     const char* objPath, const char* dbusProp, const char* dbusInterface) const
 {
+
     auto& bus = DBusHandler::getBus();
     auto service = getService(objPath, dbusInterface);
     auto method =
         bus.new_method_call(service.c_str(), objPath, dbusProperties, "Get");
+    std::cout << "Inside func"<<dbusProp<<" || "<<dbusInterface<<__func__<<std::endl;
     method.append(dbusInterface, dbusProp);
     PropertyValue value{};
     auto reply = bus.call(method);
     reply.read(value);
+    std::cout << "Inside func"<<__func__<<"return "<<std::endl;
     return value;
 }
 
@@ -653,6 +656,7 @@ std::string getBiosAttrValue(const std::string& dbusAttrName)
     constexpr auto biosConfigPath = "/xyz/openbmc_project/bios_config/manager";
     constexpr auto biosConfigIntf = "xyz.openbmc_project.BIOSConfig.Manager";
 
+    std::cout<<"Inside FUNC "<<__func__<<"\n";
     std::string var1;
     std::variant<std::string> var2;
     std::variant<std::string> var3;
@@ -662,12 +666,15 @@ std::string getBiosAttrValue(const std::string& dbusAttrName)
     {
         auto service = pldm::utils::DBusHandler().getService(biosConfigPath,
                                                              biosConfigIntf);
-        auto method = bus.new_method_call(
+        
+	std::cout<<"Inside FUNC "<<__func__<<" service =" << service.c_str()<<"\n";
+	auto method = bus.new_method_call(
             service.c_str(), biosConfigPath,
             "xyz.openbmc_project.BIOSConfig.Manager", "GetAttribute");
         method.append(dbusAttrName);
         auto reply = bus.call(method);
         reply.read(var1, var2, var3);
+    std::cout<<"Inside FUNC "<<__func__<<"\n";
     }
     catch (const sdbusplus::exception::SdBusError& e)
     {
